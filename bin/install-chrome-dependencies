@@ -46,9 +46,7 @@ case "${STACK}" in
       fonts-liberation
     "
     ;;
-  "heroku-24" | "scalingo-24" | "scalingo-26")
-    # scalingo-24/scalingo-26 sont sur Ubuntu 24.04/26.04, comme heroku-24 : mêmes
-    # paquets renommés (libasound2t64, libatk-bridge2.0-0, ...) depuis Ubuntu 24.04.
+  "heroku-24")
     PACKAGES="
       fonts-liberation
       libasound2t64
@@ -56,6 +54,31 @@ case "${STACK}" in
       libatk1.0-0
       libcups2
       libgbm1
+      libxcomposite1
+      libxdamage1
+      libxfixes3
+      libxkbcommon0
+      libxrandr2
+    "
+    ;;
+  "scalingo-24" | "scalingo-26")
+    # Même base Ubuntu 24.04+ que heroku-24, mêmes paquets renommés depuis Ubuntu
+    # 24.04 (libasound2t64, libatk-bridge2.0-0, ...). Mais contrairement à l'image
+    # heroku-24, l'image scalingo-24/26 ne fournit pas libnss3/libnssutil3/libnspr4
+    # de base : sans elles, chromedriver démarre en échouant silencieusement (ne
+    # jamais écouter le port), d'où un ECONNREFUSED côté Selenium au lieu d'une
+    # erreur de chargement de lib explicite. Confirmé par `ldd` sur un vrai
+    # container scalingo-26 (voir historique du repo pour le détail du diagnostic).
+    PACKAGES="
+      fonts-liberation
+      libasound2t64
+      libatk-bridge2.0-0
+      libatk1.0-0
+      libcups2
+      libgbm1
+      libnspr4
+      libnss3
+      libnssutil3
       libxcomposite1
       libxdamage1
       libxfixes3
